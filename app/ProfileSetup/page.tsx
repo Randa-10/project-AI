@@ -1,10 +1,9 @@
-import LoginPage from "./login/page"
+import ProfileSetup from "@/components/profile-setup"
 
-export default function Home() {
+export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <LoginPage />
-      
+      <ProfileSetup />
     </main>
   )
 }
