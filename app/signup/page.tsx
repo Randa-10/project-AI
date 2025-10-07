@@ -16,18 +16,142 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState({
+    userName: "",
+    email: "",
+    password: "",
+  })
+
+  const validateForm = () => {
+    const errors = {
+      userName: "",
+      email: "",
+      password: "",
+    }
+    let isValid = true
+
+    // Username validation
+    if (name.length < 3) {
+      errors.userName = "Username must be at least 3 characters"
+      isValid = false
+    } else if (name.length > 50) {
+      errors.userName = "Username must be less than 50 characters"
+      isValid = false
+    } else if (!/^[a-zA-Z0-9_]+$/.test(name)) {
+      errors.userName = "Username can only contain letters, numbers, and underscores"
+      isValid = false
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      errors.email = "Please enter a valid email address"
+      isValid = false
+    }
+
+    // Password validation
+    if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters"
+      isValid = false
+    } else if (!/(?=.*[a-z])/.test(password)) {
+      errors.password = "Password must contain at least one lowercase letter"
+      isValid = false
+    } else if (!/(?=.*[A-Z])/.test(password)) {
+      errors.password = "Password must contain at least one uppercase letter"
+      isValid = false
+    } else if (!/(?=.*\d)/.test(password)) {
+      errors.password = "Password must contain at least one number"
+      isValid = false
+    }
+
+    setFieldErrors(errors)
+    return isValid
+  }
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
+    setFieldErrors({ userName: "", email: "", password: "" })
 
-    // Simulate signup
-    setTimeout(() => {
+    if (!validateForm()) {
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const response = await fetch("http://shahimoamen-001-site1.mtempurl.com/api/Authentication/register", {
+        method: "POST",
+        headers: {
+          accept: "*/*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName: name,
+          email: email,
+          password: password,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+
+        // Handle specific field errors from API
+        if (errorData.errors) {
+          const newFieldErrors = { userName: "", email: "", password: "" }
+
+          if (errorData.errors.UserName || errorData.errors.userName) {
+            newFieldErrors.userName =
+              errorData.errors.UserName?.[0] || errorData.errors.userName?.[0] || "Username is invalid"
+          }
+          if (errorData.errors.Email || errorData.errors.email) {
+            newFieldErrors.email = errorData.errors.Email?.[0] || errorData.errors.email?.[0] || "Email is invalid"
+          }
+          if (errorData.errors.Password || errorData.errors.password) {
+            newFieldErrors.password =
+              errorData.errors.Password?.[0] || errorData.errors.password?.[0] || "Password is invalid"
+          }
+
+          setFieldErrors(newFieldErrors)
+        }
+
+        // Handle general error messages
+        if (errorData.message) {
+          // Check for common uniqueness errors
+          const message = errorData.message.toLowerCase()
+          if (message.includes("username") && message.includes("already")) {
+            setFieldErrors((prev) => ({ ...prev, userName: "This username is already taken" }))
+          } else if (message.includes("email") && message.includes("already")) {
+            setFieldErrors((prev) => ({ ...prev, email: "This email is already registered" }))
+          } else {
+            setError(errorData.message)
+          }
+        } else {
+          setError("Registration failed. Please try again.")
+        }
+
+        setIsLoading(false)
+        return
+      }
+
+      const data = await response.json()
+
+      // Store authentication data
       localStorage.setItem("isAuthenticated", "true")
       localStorage.setItem("userEmail", email)
       localStorage.setItem("userName", name)
+
+      // If the API returns a token, store it
+      if (data.token) {
+        localStorage.setItem("authToken", data.token)
+      }
+
       router.push("/")
-    }, 1000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred during registration")
+      setIsLoading(false)
+    }
   }
 
   const handleGoogleSignup = () => {
@@ -94,16 +218,25 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{error}</div>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Username</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="johndoe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                className={fieldErrors.userName ? "border-red-500" : ""}
               />
+              {fieldErrors.userName && <p className="text-xs text-red-600">{fieldErrors.userName}</p>}
+              <p className="text-xs text-muted-foreground">
+                At least 3 characters, letters, numbers, and underscores only
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -114,7 +247,9 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className={fieldErrors.email ? "border-red-500" : ""}
               />
+              {fieldErrors.email && <p className="text-xs text-red-600">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -125,9 +260,12 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={8}
+                className={fieldErrors.password ? "border-red-500" : ""}
               />
-              <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
+              {fieldErrors.password && <p className="text-xs text-red-600">{fieldErrors.password}</p>}
+              <p className="text-xs text-muted-foreground">
+                At least 8 characters with uppercase, lowercase, and number
+              </p>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Creating account..." : "Create Account"}

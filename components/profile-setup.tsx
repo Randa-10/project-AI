@@ -252,7 +252,6 @@
 //   )
 // }
 
-
 "use client"
 
 import { useState } from "react"
@@ -263,12 +262,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface Question {
   id: number
   question: string
-  type: "text" | "radio" | "checkbox"
+  type: "text" | "radio"
   options?: string[]
+  apiField: string
 }
 
 const questions: Question[] = [
@@ -276,18 +277,21 @@ const questions: Question[] = [
     id: 1,
     question: "What subjects do you like the most? And why?",
     type: "text",
+    apiField: "favoriteSubjects",
   },
   {
     id: 2,
     question: "Do you prefer solving logical and mathematical problems or writing stories and essays?",
     type: "radio",
     options: ["Solving logical and mathematical problems", "Writing stories and essays", "Both equally"],
+    apiField: "problemPreference",
   },
   {
     id: 3,
     question: "Do you understand information faster when you see it in pictures or videos or when you hear it?",
     type: "radio",
     options: ["Pictures or videos", "Hearing", "Both"],
+    apiField: "learningPreference",
   },
   {
     id: 4,
@@ -295,46 +299,56 @@ const questions: Question[] = [
       "When learning something new, do you like to try it yourself or are you satisfied with theoretical explanation?",
     type: "radio",
     options: ["I like to try it myself", "I'm satisfied with theoretical explanation", "I prefer combining both"],
+    apiField: "learningApproach",
   },
   {
     id: 5,
     question: "Do you have a strong memory for names and details or for general ideas?",
     type: "radio",
     options: ["Names and details", "General ideas", "Both"],
+    apiField: "memoryType",
   },
   {
     id: 6,
     question: "When you have free time, what do you usually do?",
     type: "text",
+    apiField: "freeTimeActivity",
   },
   {
     id: 7,
     question: "Are you interested in technology and devices? Art and drawing? Sports? Teaching? Or something else?",
     type: "text",
+    apiField: "mainInterests",
   },
   {
     id: 8,
     question: "Do you like to know how things work (like devices or programs)?",
     type: "radio",
     options: ["Yes, always", "Sometimes", "No, not really"],
+    apiField: "curiosityLevel",
   },
   {
     id: 9,
     question: "Do you like helping people solve their problems?",
     type: "radio",
     options: ["Yes, very much", "Sometimes", "Rarely"],
+    apiField: "helpingPreference",
   },
   {
     id: 10,
     question: "If you could choose a new subject to add to your school or university, what would it be about?",
     type: "text",
+    apiField: "dreamSubject",
   },
 ]
 
 export default function ProfileSetup() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const currentQuestion = questions[currentStep]
   const progress = ((currentStep + 1) / questions.length) * 100
@@ -358,9 +372,42 @@ export default function ProfileSetup() {
     }
   }
 
-  const handleSubmit = () => {
-    console.log("Profile answers:", answers)
-    alert("Your answers have been saved successfully!")
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const surveyData: Record<string, string> = {}
+      questions.forEach((question) => {
+        surveyData[question.apiField] = answers[question.id] || ""
+      })
+
+      const authToken = localStorage.getItem("authToken")
+
+      const response = await fetch("http://shahimoamen-001-site1.mtempurl.com/api/UserSurvey/save", {
+        method: "POST",
+        headers: {
+          accept: "*/*",
+          "Content-Type": "application/json",
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
+        },
+        body: JSON.stringify(surveyData),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to save your profile. Please try again.")
+      }
+
+      const data = await response.json()
+      console.log("[v0] Profile saved successfully:", data)
+
+      router.push("/")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred. Please try again.")
+      console.error("[v0] Error saving profile:", err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const isLastQuestion = currentStep === questions.length - 1
@@ -459,6 +506,12 @@ export default function ProfileSetup() {
           </CardContent>
         </Card>
 
+        {error && (
+          <div className="mb-4 p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+            {error}
+          </div>
+        )}
+
         {/* Navigation Buttons */}
         <div className="flex items-center justify-between gap-4">
           <Button
@@ -477,8 +530,8 @@ export default function ProfileSetup() {
                 Next
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={!isAnswered} size="lg" className="min-w-32">
-                Finish
+              <Button onClick={handleSubmit} disabled={!isAnswered || isLoading} size="lg" className="min-w-32">
+                {isLoading ? "Saving..." : "Finish"}
               </Button>
             )}
           </div>
@@ -492,4 +545,3 @@ export default function ProfileSetup() {
     </div>
   )
 }
-
