@@ -213,6 +213,7 @@ export default function ProfileSetup() {
       console.error("Error saving profile:", err)
     } finally {
       setIsLoading(false)
+      
     }
   }
 
