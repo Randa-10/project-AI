@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,16 +15,16 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.MouseEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-      const response = await fetch("http://shahimoamen-001-site1.mtempurl.com/api/Authentication/login", {
+      const response = await fetch("https://personalai.runasp.net/api/Authentication/login", {
         method: "POST",
         headers: {
-          accept: "*/*",
+          accept: "/",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -36,19 +34,26 @@ export default function LoginPage() {
       })
 
       if (!response.ok) {
-        throw new Error("Invalid username or password")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || "Invalid username or password")
       }
 
       const data = await response.json()
 
-      // Store authentication token and user info
+      // Store authentication data from API response
       if (data.token) {
         localStorage.setItem("authToken", data.token)
       }
+      if (data.userName) {
+        localStorage.setItem("userName", data.userName)
+      }
+      if (data.email) {
+        localStorage.setItem("userEmail", data.email)
+      }
       localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("userName", userName)
 
-      router.push("/")
+      // Redirect to home page
+      router.push("/ProfileSetup")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed. Please try again.")
     } finally {
@@ -118,7 +123,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-4">
             {error && (
               <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
                 {error}
@@ -133,6 +138,7 @@ export default function LoginPage() {
                 placeholder="Enter your username"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin(e as any)}
                 required
               />
             </div>
@@ -144,13 +150,14 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin(e as any)}
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
-          </form>
+          </div>
 
           <div className="text-center text-sm">
             <span className="text-muted-foreground">Don't have an account? </span>
