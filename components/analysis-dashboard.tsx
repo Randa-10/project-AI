@@ -1038,17 +1038,15 @@ export default function AnalysisDashboard() {
                       <Brain className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="font-bold text-2xl mb-2">Ready to Begin Your Journey?</p>
-                      <p className="text-white/80 text-base">
-                        Let's create your personalized daily schedule and integrate everything into your life
-                      </p>
+                      <p className="font-bold text-2xl mb-2">Ready to Review Your Journey?</p>
+ 
                     </div>
                   </div>
                   <Button
                     size="lg"
                     className="bg-white text-blue-600 hover:bg-white/90 transition-all shadow-xl text-lg px-8 py-6 shrink-0"
                   >
-                    Start My Plan
+                    GO To Dashboard 
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
