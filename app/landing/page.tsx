@@ -120,16 +120,16 @@ export default function LandingPage() {
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" className="h-9 w-auto" />
           </div>
           <div className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Coursera-Logo.png" alt="Coursera" className="h-8 w-auto" />
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v8/icons/coursera.svg" alt="Coursera" className="h-8 w-auto" />
           </div>
           <div className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
             <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Udemy_logo.svg" alt="Udemy" className="h-8 w-auto" />
           </div>
           <div className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/cd/LinkedIn_logo.svg" alt="LinkedIn" className="h-8 w-auto" />
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v8/icons/linkedin.svg" alt="LinkedIn" className="h-8 w-auto" />
           </div>
           <div className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Amazon_logo.svg" alt="Amazon" className="h-10 w-auto" />
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v8/icons/amazon.svg" alt="Amazon" className="h-10 w-auto" />
           </div>
           <div className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
             <img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Khan Academy" className="h-9 w-auto" />
