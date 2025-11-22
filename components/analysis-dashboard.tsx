@@ -1147,14 +1147,14 @@ export default function AnalysisDashboard() {
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
 
-                    <Button
+                    {/* <Button
                       size="lg"
                       className="bg-emerald-500 text-white hover:opacity-90 px-6 py-6"
                       onClick={() => (window.location.href = "/project")}
                     >
                       <GraduationCap className="w-5 h-5 mr-2" />
                       Take a Quiz
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </CardContent>
