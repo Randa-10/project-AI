@@ -255,7 +255,7 @@ export default function LoginPage() {
       localStorage.setItem("isAuthenticated", "true")
 
       // Redirect to profile setup or home page
-      router.push("/ProfileSetup")
+      router.push("/analizecv")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed. Please try again.")
     } finally {

@@ -73,12 +73,12 @@ export default function LandingPage() {
             {/* <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 hover:bg-gray-50 transition-all" onClick={() => (window.location.href = "#services")}>
               Learn More
             </Button> */}
-                  <Button
+                  {/* <Button
                                  size="lg" variant="outline" className="text-lg px-10 py-7 border-2 hover:bg-gray-50 transition-all"        onClick={() => (window.location.href = "/analizecv")}
                                 >
                                   <FileText className="w-5 h-5 mr-2" />
                                   Analyze CV
-                                </Button>
+                                </Button> */}
           </div>
         </div>
       </section>
