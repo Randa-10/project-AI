@@ -818,7 +818,7 @@ export default function CVAnalysisDashboard() {
 
               {/* Goals */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Career Goals</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Career Goals (Optional)</label>
                 <textarea
                   value={goals}
                   onChange={(e) => setGoals(e.target.value)}
@@ -830,7 +830,7 @@ export default function CVAnalysisDashboard() {
 
               {/* Target Role */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Target Role</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Target Role (Optional)</label>
                 <input
                   type="text"
                   value={targetRole}
